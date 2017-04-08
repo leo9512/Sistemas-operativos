@@ -44,9 +44,30 @@ int main(int argc, char const *argv[])
 
 	if(total_hilos > *size){ // en cado de que el número de hilos supere el total de posiciones de los vectores
 		printf("La cantidad de hilos no puede superar el tamaño de los vectores\n");
+		pthread_t hilo_unico;
+		int * respuesta;
+
+		struct param parametro_unico;
+		parametro_unico.vec1=vec_1;
+		parametro_unico.vec2=vec_2;
+		parametro_unico.n=*size;
+		parametro_unico.inicio = 0;// inicio es en donde tiene que empezar a ejecutar la operación el hilo dentro del vector
+		parametro_unico.limite = *size;
+		parametro_unico.operados= 0;
+	//---------------------------------------------Desde acá se analiza el total del tiempo de ejecución para todos los hilos------------------------------------
+		gettimeofday(&begin, NULL);
+		pthread_create(&hilo_unico,NULL,producto_punto,&parametro_unico);
+		pthread_join(hilo_unico,(void*)&respuesta);
+		gettimeofday(&end, NULL);
+	//--------------------------------------------Acá finaliza el tiempo a analizar--------------------------------
+
+		printf("resultado = %d\n",*respuesta);// se muestra el resultado
+		printf("tiempo en milisegundos: %f\n", ((end.tv_sec - begin.tv_sec)*1000000.0 +(end.tv_usec- begin.tv_usec))/1000.0); //se muestra el tiempo en milisegundos
+		printf("tiempo en segundos: %f\n", ((end.tv_sec - begin.tv_sec)*1000000.0 +(end.tv_usec- begin.tv_usec))/1000000.0); //se muestra el tiempo en segundos
+
 		return 0;
 	}
-	//---------------------------------------------Desde acá se analiza el total del tiempo de ejecución para todos los hilos------------------------------------
+		//---------------------------------------------Desde acá se analiza el total del tiempo de ejecución para todos los hilos------------------------------------
 	gettimeofday(&begin, NULL);
 	int i;
 	for(i=0;i<total_hilos;i++) {//a cada hilo se le asigna un intervalo del vector a operar
